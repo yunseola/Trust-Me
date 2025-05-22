@@ -48,13 +48,18 @@ INSTALLED_APPS = [
     'articles',
     'accounts',
     'deposits',
+
     'rest_framework',
     'rest_framework.authtoken',
+
     'dj_rest_auth',
-    'corsheaders',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
+
+    'django.contrib.sites',
+    # 'allauth.socialaccount',
+    'corsheaders',
+
     'allauth.socialaccount',
     'dj_rest_auth.registration',
     'django.contrib.admin',
@@ -64,6 +69,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

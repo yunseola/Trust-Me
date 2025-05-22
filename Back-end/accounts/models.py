@@ -4,11 +4,13 @@ from deposits.models import DepositProducts, SavingProducts
 # Create your models here.
 
 class User(AbstractUser):
-    username = models.CharField(max_length=20,unique=True)
+    nickname = models.CharField(max_length=20,unique=True)
+    name = models.CharField(max_length=20)
+    phonenumber = models.CharField(max_length=11)
     age = models.IntegerField(default=20)
+    email = models.CharField(max_length=20)
     gender = models.IntegerField(default=1)
     salary = models.IntegerField(default=-1)
     wealth = models.IntegerField(default=-1)
-    tendency = models.IntegerField(default=1)
     deposit = models.ManyToManyField(DepositProducts, blank=True, related_name="joined")
     saving = models.ManyToManyField(SavingProducts, blank=True, related_name="joined2")
