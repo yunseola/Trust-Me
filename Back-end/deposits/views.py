@@ -8,6 +8,13 @@ import requests
 from deposits.models import DepositProducts
 from .services.summary import summarize_deposit_product
 from .services.youtube import search_youtube_videos
+from .services.metal import fetch_gold_or_silver_data
+from .services.exchange import (
+    get_major_exchange_rates,
+    convert_currency,
+    get_historical_rate,
+    get_supported_currencies
+)
 
 from django.db.models import Count, Q
 
@@ -151,6 +158,56 @@ def gpt_recommendation(request):
 @api_view(['GET'])
 def youtube_videos(request):
     query = request.GET.get("query", "금융")
-    print("▶ query:", query)
     videos = search_youtube_videos(query)
     return Response({"results": videos})
+
+
+@api_view(['GET'])
+def get_gold_and_silver_prices(request):
+    try:
+        gold_data = fetch_gold_or_silver_data("XAU")
+        silver_data = fetch_gold_or_silver_data("XAG")
+
+        return Response({
+            "XAU": gold_data,
+            "XAG": silver_data
+        })
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
+
+@api_view(['GET'])
+def major_exchange_rates(request):
+    try:
+        data = get_major_exchange_rates()
+        return Response(data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+@api_view(['GET'])
+def convert_view(request):
+    to = request.GET.get("to")
+    amount = float(request.GET.get("amount", 1.0))
+    try:
+        result = convert_currency(to, amount)
+        return Response({"converted": result})
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+
+@api_view(['GET'])
+def historical_exchange_rate(request):
+    date = request.GET.get("date")
+    symbols = request.GET.get("symbols", "KRW")
+    try:
+        data = get_historical_rate(date, symbols)
+        return Response(data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+
+@api_view(['GET'])
+def supported_currencies_view(request):
+    try:
+        data = get_supported_currencies()
+        return Response(data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
