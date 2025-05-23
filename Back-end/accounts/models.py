@@ -9,8 +9,8 @@ class User(AbstractUser):
     phonenumber = models.CharField(max_length=11)
     age = models.IntegerField(default=20)
     email = models.CharField(max_length=20)
-    gender = models.IntegerField(default=1)
-    salary = models.IntegerField(default=-1)
-    wealth = models.IntegerField(default=-1)
+    gender = models.IntegerField(default=0) # 0: 남자, 1: 여자
+    salary = models.IntegerField(default=0)
+    wealth = models.IntegerField(default=0)
     deposit = models.ManyToManyField(DepositProducts, blank=True, related_name="joined")
     saving = models.ManyToManyField(SavingProducts, blank=True, related_name="joined2")
