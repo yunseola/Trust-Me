@@ -3,6 +3,9 @@
 import os
 import sys
 
+# ✅ [1] dotenv 추가
+from dotenv import load_dotenv
+load_dotenv()  # .env 파일을 자동 로드합니다
 
 def main():
     """Run administrative tasks."""
@@ -16,7 +19,6 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
-
 
 if __name__ == '__main__':
     main()

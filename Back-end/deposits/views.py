@@ -5,6 +5,10 @@ from .serializers import DepositProductsSerializerD, DepositProductsSerializerC,
 from rest_framework.decorators import api_view
 from rest_framework import status
 import requests
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from deposits.models import DepositProducts
+from .services.summary import summarize_deposit_product
 
 from django.db.models import Count, Q
 
@@ -105,3 +109,25 @@ def save_saving(request): # models에 저장하는 함수
         duplicate_objects.exclude(pk=duplicate_objects.first().pk).delete()
 
     return Response(base_serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def summarize_product(request, product_id):
+    try:
+        product = DepositProducts.objects.get(pk=product_id)
+    except DepositProducts.DoesNotExist:
+        return Response({"error": "상품을 찾을 수 없습니다."}, status=404)
+
+    summary = summarize_deposit_product(
+        name=product.fin_prdt_nm,
+        bank=product.kor_co_nm,
+        etc_note=product.etc_note,
+        spcl_cnd=product.spcl_cnd,
+        join_member=product.join_member,
+        join_way=product.join_way
+    )
+
+    return Response({
+        "product_id": product_id,
+        "summary": summary
+    })
