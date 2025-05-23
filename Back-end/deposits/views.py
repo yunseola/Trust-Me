@@ -5,10 +5,9 @@ from .serializers import DepositProductsSerializerD, DepositProductsSerializerC,
 from rest_framework.decorators import api_view
 from rest_framework import status
 import requests
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from deposits.models import DepositProducts
 from .services.summary import summarize_deposit_product
+from .services.youtube import search_youtube_videos
 
 from django.db.models import Count, Q
 
@@ -131,3 +130,27 @@ def summarize_product(request, product_id):
         "product_id": product_id,
         "summary": summary
     })
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .services.recommend import recommend_products
+
+@api_view(['POST'])
+def gpt_recommendation(request):
+    profile = {
+        'age': request.data.get('age', ''),
+        'asset': request.data.get('asset', ''),
+        'goal': request.data.get('goal', ''),
+        'type': request.data.get('type', '')
+    }
+
+    result = recommend_products(profile)
+    return Response({"recommendation": result})
+
+
+@api_view(['GET'])
+def youtube_videos(request):
+    query = request.GET.get("query", "금융")
+    print("▶ query:", query)
+    videos = search_youtube_videos(query)
+    return Response({"results": videos})
