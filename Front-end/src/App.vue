@@ -3,20 +3,18 @@
     <header class="app-header">
       <div class="header-content">
         <!-- 로고 영역 -->
-        <router-link to="/" class="logo-placeholder">
           <div class="icon-placeholder">
             <img src="@/assets/logo_icon.png" width="100px" height="50px" alt="로고아이콘">
           </div>
-        </router-link>
         
         <!-- 네비게이션 메뉴 -->
         <nav class="navigation-menu">
           <ul>
-            <li><router-link to="/products">금융상품 소개</router-link></li>
-            <li><router-link to="/recommend">맞춤형 상품 추천</router-link></li>
-            <li><router-link to="/compare">금융상품 비교</router-link></li>
-            <li><router-link to="/exchange">환율</router-link></li>
-            <li><router-link to="/market">금은시세</router-link></li>
+            <li>금융상품 소개</li>
+            <li>맞춤형 상품 추천<</li>
+            <li>금융상품 비교</li>
+            <li>환율<</li>
+            <li>금은시세</li>
           </ul>
         </nav>
         
@@ -25,11 +23,11 @@
           <!-- 상단 링크들 -->
           <div class="top-bar">
             <div class="auth-links">
-              <router-link to="/login">로그인</router-link>
+              <RouterLink to="/login">로그인</RouterLink>
               <span class="separator">|</span>
-              <router-link to="/signup">회원가입</router-link>
+              <RouterLink to="/login">회원가입</RouterLink>
               <span class="separator">|</span>
-              <router-link to="/help">도움말</router-link>
+              <RouterLink to="/login">도움말</RouterLink>
             </div>
           </div>
           
@@ -47,7 +45,7 @@
     </header>
 
     <main class="main-content">
-      <router-view />
+      <RouterView />
     </main>
 
     <footer class="app-footer">
@@ -77,7 +75,7 @@
         <div class="footer-info">
           <p>(주) 믿고름 사업자 번호: 992-13-01731&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;대표전화: 1599-8244&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;주소: 부산광역시 연제구 신호동 101-2</p>
           <p>
-            <router-link to="/">회사소개</router-link> | 
+            <a href="">회사소개</a> | 
             <a href="https://www.jobkorea.co.kr/">인재채용</a> |
             <a href="https://www.navercorp.com/nhn/company/proposalGuide.nhn">제휴제안</a> |
             <a href="https://policy.naver.com/policy/service.html">이용약관</a> |
@@ -93,10 +91,11 @@
 </template>
 
 <script setup>
-// 스크립트 로직은 비워둡니다.
+import { RouterView } from 'vue-router';
+
 </script>
 
-<style>
+<style scoped>
 /* ======== 전역 및 레이아웃 스타일 ======== */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
