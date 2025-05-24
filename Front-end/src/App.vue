@@ -2,7 +2,14 @@
   <div id="app-container">
     <header class="app-header">
       <div class="header-content">
-        <router-link to="/" class="logo-placeholder"><div class="icon-placeholder"><img src="@/assets/logo_icon.png" width="100px" height="50px" alt="로고아이콘"></div></router-link>
+        <!-- 로고 영역 -->
+        <router-link to="/" class="logo-placeholder">
+          <div class="icon-placeholder">
+            <img src="@/assets/logo_icon.png" width="100px" height="50px" alt="로고아이콘">
+          </div>
+        </router-link>
+        
+        <!-- 네비게이션 메뉴 -->
         <nav class="navigation-menu">
           <ul>
             <li><router-link to="/products">금융상품 소개</router-link></li>
@@ -12,13 +19,30 @@
             <li><router-link to="/market">금은시세</router-link></li>
           </ul>
         </nav>
-        <!--  -->
-        <div class="user-menu">
-          <div class="icon-placeholder"><img src="@/assets/search_icon.png" width="24px" height="24px" alt="챗봇아이콘"></div>  <!-- 모달폼으로 만들기 -->
-          <div class="icon-placeholder"><img src="@/assets/chatbot_icon.png" width="24px" height="24px" alt="검색아이콘"></div> <!-- 모달폼으로 만들기 -->
-        </div>
-
         
+        <!-- 우측 영역: 상단 링크와 하단 아이콘 -->
+        <div class="right-section">
+          <!-- 상단 링크들 -->
+          <div class="top-bar">
+            <div class="auth-links">
+              <router-link to="/login">로그인</router-link>
+              <span class="separator">|</span>
+              <router-link to="/signup">회원가입</router-link>
+              <span class="separator">|</span>
+              <router-link to="/help">도움말</router-link>
+            </div>
+          </div>
+          
+          <!-- 하단 아이콘들 -->
+          <div class="user-menu">
+            <div class="icon-placeholder">
+              <img src="@/assets/search_icon.png" width="24px" height="24px" alt="검색아이콘">
+            </div>
+            <div class="icon-placeholder">
+              <img src="@/assets/chatbot_icon.png" width="24px" height="24px" alt="챗봇아이콘">
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -29,10 +53,26 @@
     <footer class="app-footer">
       <div class="footer-content">
         <div class="footer-icons">
-          <div class="footer-icon-placeholder"><a href="https://mail.naver.com" target="_blank" rel="noopener noreferrer"><img src="@/assets/email_icon.png" width="28px" height="30px" alt="이메일아이콘"></a></div>
-          <div class="footer-icon-placeholder"><a href="https://www.instagram.com/fsskorea/" target="_blank" rel="noopener noreferrer"><img src="@/assets/email_icon.png" width="29px" height="29px" alt="인스타아이콘"></a></div>
-          <div class="footer-icon-placeholder"><a href="https://www.tiktok.com/tag/%EA%B8%88%EC%9C%B5%EA%B0%90%EB%8F%85%EC%9B%90" target="_blank" rel="noopener noreferrer"><img src="@/assets/tiktok_icon.png" width="28px" height="28px" alt="틱톡아이콘"></a></div>
-          <div class="footer-icon-placeholder"><a href="https://www.youtube.com/fsskorea" target="_blank" rel="noopener noreferrer"><img src="@/assets/youtube_icon.png" width="29px" height="31px" alt="유튜브아이콘"></a></div>
+          <div class="footer-icon-placeholder">
+            <a href="https://mail.naver.com" target="_blank" rel="noopener noreferrer">
+              <img src="@/assets/email_icon.png" width="28px" height="30px" alt="이메일아이콘">
+            </a>
+          </div>
+          <div class="footer-icon-placeholder">
+            <a href="https://www.instagram.com/fsskorea/" target="_blank" rel="noopener noreferrer">
+              <img src="@/assets/instagram_icon.png" width="29px" height="29px" alt="인스타아이콘">
+            </a>
+          </div>
+          <div class="footer-icon-placeholder">
+            <a href="https://www.tiktok.com/tag/%EA%B8%88%EC%9C%B5%EA%B0%90%EB%8F%85%EC%9B%90" target="_blank" rel="noopener noreferrer">
+              <img src="@/assets/tiktok_icon.png" width="28px" height="28px" alt="틱톡아이콘">
+            </a>
+          </div>
+          <div class="footer-icon-placeholder">
+            <a href="https://www.youtube.com/fsskorea" target="_blank" rel="noopener noreferrer">
+              <img src="@/assets/youtube_icon.png" width="29px" height="31px" alt="유튜브아이콘">
+            </a>
+          </div>
         </div>
         <div class="footer-info">
           <p>(주) 믿고름 사업자 번호: 992-13-01731&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;대표전화: 1599-8244&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;주소: 부산광역시 연제구 신호동 101-2</p>
@@ -87,11 +127,11 @@ a {
   color: inherit;
 }
 
-/* ======== HEADER 스타일 (색상 변경) ======== */
+/* ======== HEADER 스타일 ======== */
 .app-header {
   width: 100%;
-  background-color: #22356F; /* 배경색 변경 */
-  color: #FFFFFF; /* header 안의 모든 글자 색상 흰색으로 지정 */
+  background-color: #22356F;
+  color: #FFFFFF;
 }
 
 .header-content {
@@ -105,27 +145,18 @@ a {
   box-sizing: border-box;
 }
 
-/* .logo-placeholder {
-  width: 100px;
-  height: 35px;
-  background-color: #FFFFFF;
-  opacity: 0.8;
-  border-radius: 4px;} */
-
+/* ======== 네비게이션 메뉴 스타일 ======== */
 .navigation-menu a {
   font-size: 16px;
   font-weight: 500;
-  color: #FFFFFF; /* 네비게이션 텍스트 색상 변경 */
-  opacity: 0.9; /* 기본 텍스트 약간 투명하게 */
-}
-
-.navigation-menu a:hover {
-  opacity: 1;
+  color: #FFFFFF;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
 }
 
 .navigation-menu a.router-link-exact-active {
   font-weight: 700;
-  opacity: 1; /* 활성화된 메뉴는 완전한 흰색 */
+  opacity: 1;
 }
 
 .navigation-menu ul {
@@ -136,24 +167,64 @@ a {
   padding: 0;
 }
 
+/* ======== 우측 섹션 스타일 (핵심 수정 부분) ======== */
+.right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* 상단 링크들 스타일 */
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-links a {
+  font-size: 12px;
+  font-weight: 400;
+  color: #FFFFFF;
+  opacity: 0.8;
+  padding: 4px 6px;
+  border-radius: 3px;
+  transition: opacity 0.2s ease;
+}
+
+.separator {
+  color: #FFFFFF;
+  opacity: 0.6;
+  font-size: 11px;
+  margin: 0 2px;
+}
+
+/* 하단 아이콘들 스타일 */
 .user-menu {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
-/* .icon-placeholder {
-  width: 24px;
-  height: 24px;
-  background-color:  black;
-  opacity: 0.8;
-  border-radius: 50%;} */
+.icon-placeholder {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
 
-/* ======== FOOTER 스타일 (색상 변경) ======== */
+
+
+/* ======== FOOTER 스타일 ======== */
 .app-footer {
   width: 100%;
-  background-color: #22356F; /* 배경색 변경 */
-  color: #FFFFFF; /* 내부 모든 텍스트의 기본 색상을 흰색으로 설정 */
+  background-color: #22356F;
+  color: #FFFFFF;
   padding: 30px 0;
 }
 
@@ -171,22 +242,32 @@ a {
   margin-bottom: 20px;
 }
 
-/* .footer-icon-placeholder {
-  width: 28px;
-  height: 28px;
-  background-color: black;
+.footer-icon-placeholder {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.footer-icon-placeholder img {
+  filter: brightness(0) invert(1);
   opacity: 0.8;
-} */
+  transition: opacity 0.2s ease;
+}
 
 .footer-info p {
   font-size: 15px;
-  /* color 속성은 상위 .app-footer에서 상속받음 */
-  opacity: 0.7; /* 정보 텍스트는 약간 더 투명하게 */
-  margin: 5px;;
+  opacity: 0.7;
+  margin: 5px;
 }
 
 .footer-info p:nth-of-type(2) {
   font-size: 10px;
+}
+
+.footer-info a {
+  color: #FFFFFF;
+  transition: color 0.2s ease;
 }
 
 /* ======== 반응형 스타일 ======== */
@@ -197,10 +278,44 @@ a {
     padding: 20px;
     gap: 15px;
   }
+  
   .navigation-menu ul {
     flex-direction: column;
     text-align: center;
     gap: 15px;
+  }
+  
+  .right-section {
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .auth-links a {
+    font-size: 11px;
+    padding: 3px 5px;
+  }
+  
+  .user-menu {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-links {
+    gap: 6px;
+  }
+  
+  .auth-links a {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+  
+  .separator {
+    font-size: 10px;
+  }
+  
+  .user-menu {
+    gap: 10px;
   }
 }
 </style>
