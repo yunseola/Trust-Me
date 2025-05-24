@@ -2,22 +2,23 @@
   <div id="app-container">
     <header class="app-header">
       <div class="header-content">
-        <router-link to="/" class="logo-placeholder"></router-link>
-
+        <router-link to="/" class="logo-placeholder"><div class="icon-placeholder"><img src="@/assets/logo_icon.png" width="100px" height="50px" alt="로고아이콘"></div></router-link>
         <nav class="navigation-menu">
           <ul>
             <li><router-link to="/products">금융상품 소개</router-link></li>
             <li><router-link to="/recommend">맞춤형 상품 추천</router-link></li>
             <li><router-link to="/compare">금융상품 비교</router-link></li>
             <li><router-link to="/exchange">환율</router-link></li>
-            <li><router-link to="/market">금융 시세</router-link></li>
+            <li><router-link to="/market">금은시세</router-link></li>
           </ul>
         </nav>
-
+        <!--  -->
         <div class="user-menu">
-          <div class="icon-placeholder"></div>
-          <div class="icon-placeholder"></div>
+          <div class="icon-placeholder"><img src="@/assets/search_icon.png" width="24px" height="24px" alt="챗봇아이콘"></div>  <!-- 모달폼으로 만들기 -->
+          <div class="icon-placeholder"><img src="@/assets/chatbot_icon.png" width="24px" height="24px" alt="검색아이콘"></div> <!-- 모달폼으로 만들기 -->
         </div>
+
+        
       </div>
     </header>
 
@@ -28,15 +29,23 @@
     <footer class="app-footer">
       <div class="footer-content">
         <div class="footer-icons">
-          <div class="footer-icon-placeholder"></div>
-          <div class="footer-icon-placeholder"></div>
-          <div class="footer-icon-placeholder"></div>
-          <div class="footer-icon-placeholder"></div>
+          <div class="footer-icon-placeholder"><a href="https://mail.naver.com" target="_blank" rel="noopener noreferrer"><img src="@/assets/email_icon.png" width="28px" height="30px" alt="이메일아이콘"></a></div>
+          <div class="footer-icon-placeholder"><a href="https://www.instagram.com/fsskorea/" target="_blank" rel="noopener noreferrer"><img src="@/assets/email_icon.png" width="29px" height="29px" alt="인스타아이콘"></a></div>
+          <div class="footer-icon-placeholder"><a href="https://www.tiktok.com/tag/%EA%B8%88%EC%9C%B5%EA%B0%90%EB%8F%85%EC%9B%90" target="_blank" rel="noopener noreferrer"><img src="@/assets/tiktok_icon.png" width="28px" height="28px" alt="틱톡아이콘"></a></div>
+          <div class="footer-icon-placeholder"><a href="https://www.youtube.com/fsskorea" target="_blank" rel="noopener noreferrer"><img src="@/assets/youtube_icon.png" width="29px" height="31px" alt="유튜브아이콘"></a></div>
         </div>
-        
         <div class="footer-info">
-          <p>(주) 믿고름 사업자 번호: 992-13-01731   대표전화: 1599-8244   주소: 부산광역시 연제구 신호동 101-2</p>
-          <p>회사소개 | 인재채용 | 제휴제안 | 이용약관 | 개인정보처리방침 | 청소년보호정책 | 믿고름 정책 | 고객센터  | ⓒ Trust Me™ Corp.</p>
+          <p>(주) 믿고름 사업자 번호: 992-13-01731&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;대표전화: 1599-8244&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;주소: 부산광역시 연제구 신호동 101-2</p>
+          <p>
+            <router-link to="/">회사소개</router-link> | 
+            <a href="https://www.jobkorea.co.kr/">인재채용</a> |
+            <a href="https://www.navercorp.com/nhn/company/proposalGuide.nhn">제휴제안</a> |
+            <a href="https://policy.naver.com/policy/service.html">이용약관</a> |
+            <a href="https://policy.naver.com/policy/privacy.html">개인정보처리방침</a> |
+            <a href="https://policy.naver.com/policy/youthpolicy.html">청소년보호정책</a> |
+            <a href="https://policy.naver.com/policy/search_policy.html">믿고름 정책</a> |
+            <a href="https://help.naver.com/index.help?lang=ko">고객센터</a> | ⓒ Trust Me™ Corp.
+          </p>
         </div>
       </div>
     </footer>
@@ -96,13 +105,12 @@ a {
   box-sizing: border-box;
 }
 
-.logo-placeholder {
+/* .logo-placeholder {
   width: 100px;
   height: 35px;
-  background-color: #FFFFFF; /* 로고 배경을 흰색으로 하여 잘 보이게 함 */
-  opacity: 0.8; /* 약간의 투명도 조절 */
-  border-radius: 4px;
-}
+  background-color: #FFFFFF;
+  opacity: 0.8;
+  border-radius: 4px;} */
 
 .navigation-menu a {
   font-size: 16px;
@@ -134,13 +142,12 @@ a {
   gap: 20px;
 }
 
-.icon-placeholder {
+/* .icon-placeholder {
   width: 24px;
   height: 24px;
-  background-color: #FFFFFF; /* 아이콘 배경도 흰색으로 */
+  background-color:  black;
   opacity: 0.8;
-  border-radius: 50%;
-}
+  border-radius: 50%;} */
 
 /* ======== FOOTER 스타일 (색상 변경) ======== */
 .app-footer {
@@ -164,18 +171,22 @@ a {
   margin-bottom: 20px;
 }
 
-.footer-icon-placeholder {
+/* .footer-icon-placeholder {
   width: 28px;
   height: 28px;
-  background-color: #FFFFFF;
+  background-color: black;
   opacity: 0.8;
-}
+} */
 
 .footer-info p {
-  font-size: 13px;
+  font-size: 15px;
   /* color 속성은 상위 .app-footer에서 상속받음 */
   opacity: 0.7; /* 정보 텍스트는 약간 더 투명하게 */
-  margin: 0;
+  margin: 5px;;
+}
+
+.footer-info p:nth-of-type(2) {
+  font-size: 10px;
 }
 
 /* ======== 반응형 스타일 ======== */
