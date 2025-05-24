@@ -11,9 +11,9 @@
         <nav class="navigation-menu">
           <ul>
             <li>금융상품 소개</li>
-            <li>맞춤형 상품 추천<</li>
+            <li>맞춤형 상품 추천</li>
             <li>금융상품 비교</li>
-            <li>환율<</li>
+            <li>환율</li>
             <li>금은시세</li>
           </ul>
         </nav>
