@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted , computed} from 'vue'
+import { ref, onMounted, computed, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import goldIcon from '@/assets/Metal/gold-icon.png'
 import silverIcon from '@/assets/Metal/silver-icon.png'
@@ -94,9 +94,7 @@ import goldExcel from '@/assets/Metal/Gold_prices.xlsx?url'
 import silverExcel from '@/assets/Metal/Silver_prices.xlsx?url'
 
 const router = useRouter()
-const goHome = () => {
-  router.push('/') // 🔁 루트 페이지로 이동
-}
+const goHome = () => router.push('/')
 
 const goldData = ref([])
 const silverData = ref([])
@@ -105,6 +103,55 @@ const isGold = ref(true)
 const startDate = ref('')
 const endDate = ref('')
 
+// ✅ 엑셀 날짜 처리 함수
+const excelDateToJSDate = (serial) => {
+  if (typeof serial === 'number') {
+    const utc_days = Math.floor(serial - 25569)
+    const utc_value = utc_days * 86400
+    const date_info = new Date(utc_value * 1000)
+    return date_info.toISOString().substring(0, 10) // 'YYYY-MM-DD'
+  } else if (typeof serial === 'string') {
+    return serial.substring(0, 10)
+  } else {
+    console.warn('날짜 형식 알 수 없음:', serial)
+    return ''
+  }
+}
+
+// ✅ 필터된 데이터 계산
+const filteredData = computed(() => {
+  const source = isGold.value ? goldData.value : silverData.value
+  if (!startDate.value || !endDate.value) return []
+
+  const start = new Date(startDate.value)
+  const end = new Date(endDate.value)
+
+  const result = source
+    .filter(item => {
+      const current = new Date(item.Date)
+      return (
+        current >= start &&
+        current <= end &&
+        item.Price !== undefined &&
+        !isNaN(item.Price)
+      )
+    })
+    .sort((a, b) => new Date(a.Date) - new Date(b.Date))
+
+  console.log('✅ 필터된 데이터:', result)
+  console.log('✅ [차트용 데이터]:', isGold.value ? '금' : '은', result)
+  return result
+})
+
+// ✅ 로그 추적용 watchEffect (filteredData가 위에 선언되어야 작동함!)
+watchEffect(() => {
+  console.log('🔍 goldData:', goldData.value)
+  console.log('🔍 startDate:', startDate.value)
+  console.log('🔍 endDate:', endDate.value)
+  console.log('📊 filteredData:', filteredData.value)
+})
+
+// ✅ 엑셀 로드 함수
 const loadExcel = async () => {
   const load = async (url) => {
     const res = await fetch(url)
@@ -112,44 +159,31 @@ const loadExcel = async () => {
     const workbook = XLSX.read(blob)
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
 
-    // 엑셀에서 Date와 Open을 추출해 변환
-    return XLSX.utils.sheet_to_json(sheet).map(row => ({
-      Date: typeof row['Date'] === 'string'
-        ? row['Date'].substring(0, 10)
-        : new Date(row['Date']).toISOString().substring(0, 10),
-      Price: parseFloat(row['Open']) // 'Open' → 'Price' 필드로 저장
-    }))
+    const data = XLSX.utils.sheet_to_json(sheet).map(row => {
+      const converted = {
+        Date: excelDateToJSDate(row['Date']),
+        Price: parseFloat(String(row['Open']).replace(/,/g, ''))
+      }
+      if (!converted.Date) {
+        console.warn('❌ 변환 실패한 row:', row)
+      }
+      return converted
+    })
+
+    return data
   }
 
   goldData.value = await load(goldExcel)
   silverData.value = await load(silverExcel)
+
+  console.log('✅ goldData:', goldData.value)
+  console.log('✅ silverData:', silverData.value)
 }
 
+// mount 후 로드
 onMounted(() => {
-  loadExcel().then(() => {
-    console.log('✅ goldData:', goldData.value)
-    console.log('✅ silverData:', silverData.value)
-    console.log('✅ filteredData:', filteredData.value)
-  })
+  loadExcel()
 })
-
-const filteredData = computed(() => {
-  const source = isGold.value ? goldData.value : silverData.value
-
-  if (!startDate.value || !endDate.value) return []
-
-  return source
-    .filter(item => {
-      return (
-        item.Date >= startDate.value &&
-        item.Date <= endDate.value &&
-        item.Price !== undefined &&
-        !isNaN(item.Price)
-      )
-    })
-    .sort((a, b) => a.Date.localeCompare(b.Date)) // 날짜 오름차순 정렬
-})
-
 
 
 </script>
