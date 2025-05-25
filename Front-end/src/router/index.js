@@ -2,6 +2,7 @@ import loginView from '../views/loginView.vue'
 import HomeView from '../views/HomeView.vue'
 import SignUpView from '../views/SignUpView.vue'
 import MetalPriceView from '../views/MetalPriceView.vue'
+import ExchangeView from '../views/ExchangeView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -30,6 +31,11 @@ const router = createRouter({
       name: 'metal-price',
       component: MetalPriceView
     },
+    {
+    path: '/exchange',   
+    name: 'exchange',
+    component: ExchangeView   
+  }
   ],
 })
 router.afterEach((to, from) => {

@@ -23,9 +23,9 @@
           <span class="title">오늘의 금 시세</span>
           <span class="unit">(단위: USD/oz)</span>
         </div>
-        <div class="price-line"><span>시가</span><span>24.82</span></div>
-        <div class="price-line"><span>고가</span><span>25.22</span></div>
-        <div class="price-line"><span>저가</span><span>24.52</span></div>
+        <div class="price-line"><span>시가</span><span>{{ goldSummary.open }}</span></div>
+        <div class="price-line"><span>고가</span><span>{{ goldSummary.high }}</span></div>
+        <div class="price-line"><span>저가</span><span>{{ goldSummary.low }}</span></div>
       </div>
     </div>
 
@@ -37,9 +37,9 @@
           <span class="title">오늘의 은 시세</span>
           <span class="unit">(단위: USD/oz)</span>
         </div>
-        <div class="price-line"><span>시가</span><span>24.82</span></div>
-        <div class="price-line"><span>고가</span><span>25.22</span></div>
-        <div class="price-line"><span>저가</span><span>24.52</span></div>
+        <div class="price-line"><span>시가</span><span>{{ silverSummary.open }}</span></div>
+        <div class="price-line"><span>고가</span><span>{{ silverSummary.high }}</span></div>
+        <div class="price-line"><span>저가</span><span>{{ silverSummary.low }}</span></div>
       </div>
     </div>
   </div>
@@ -98,6 +98,9 @@ const goHome = () => router.push('/')
 
 const goldData = ref([])
 const silverData = ref([])
+
+const goldSummary = ref({ open: 0, high: 0, low: 0 })
+const silverSummary = ref({ open: 0, high: 0, low: 0 })
 
 const isGold = ref(true)
 const startDate = ref('')
@@ -180,9 +183,25 @@ const loadExcel = async () => {
   console.log('✅ silverData:', silverData.value)
 }
 
+const fetchMetalSummary = async () => {
+  try {
+    const res = await fetch('http://127.0.0.1:8000/deposits/metal/')
+    const data = await res.json()
+
+    goldSummary.value = data.XAU || {}
+    silverSummary.value = data.XAG || {}
+
+    console.log('✅ 금 시세:', goldSummary.value)
+    console.log('✅ 은 시세:', silverSummary.value)
+  } catch (err) {
+    console.error('❌ 시세 데이터 가져오기 실패:', err)
+  }
+}
+
 // mount 후 로드
 onMounted(() => {
   loadExcel()
+  fetchMetalSummary()
 })
 
 

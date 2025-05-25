@@ -157,8 +157,13 @@ def gpt_recommendation(request):
 
 @api_view(['GET'])
 def youtube_videos(request):
-    query = request.GET.get("query", "금융")
-    videos = search_youtube_videos(query)
+    user_query = request.GET.get("query", "")  # 사용자가 입력한 키워드
+    base_query = "금융"
+
+    # 🔍 사용자가 입력하면 붙이고, 아니면 금융만
+    final_query = f"{user_query} {base_query}".strip()
+
+    videos = search_youtube_videos(final_query)
     return Response({"results": videos})
 
 
