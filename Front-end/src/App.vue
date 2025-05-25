@@ -3,9 +3,9 @@
     <header class="app-header">
       <div class="header-content">
         <!-- 로고 영역 -->
-          <div class="icon-placeholder">
-            <img src="@/assets/logo_icon.png" width="100px" height="50px" alt="로고아이콘">
-          </div>
+        <div class="icon-placeholder">
+          <RouterLink to="/"><img src="@/assets/logo_icon.png" width="100px" height="50px" alt="로고아이콘"></RouterLink>
+        </div>
         
         <!-- 네비게이션 메뉴 -->
         <nav class="navigation-menu">
@@ -23,11 +23,22 @@
           <!-- 상단 링크들 -->
           <div class="top-bar">
             <div class="auth-links">
-              <RouterLink to="/login">로그인</RouterLink>
-              <span class="separator">|</span>
-              <RouterLink to="/login">회원가입</RouterLink>
-              <span class="separator">|</span>
-              <RouterLink to="/login">도움말</RouterLink>
+              <!-- 로그인 상태일 때 -->
+              <template v-if="authStore.isLoggedIn">
+                <RouterLink to="/help">믿고름소개</RouterLink>
+                <span class="separator">|</span>
+                <RouterLink to="/mypage">마이페이지</RouterLink>
+                <span class="separator">|</span>
+                <a href="#" @click.prevent="handleLogout">로그아웃</a>
+              </template>
+              <!-- 로그아웃 상태일 때 -->
+              <template v-else>
+                <RouterLink to="/login">밑고름소개</RouterLink>
+                <span class="separator">|</span>
+                <RouterLink to="/signup">회원가입</RouterLink>
+                <span class="separator">|</span>
+                <RouterLink to="/login">로그인</RouterLink>
+              </template>
             </div>
           </div>
           
@@ -49,6 +60,7 @@
     </main>
 
     <footer class="app-footer">
+      <!-- 푸터 내용은 기존과 동일하게 유지 -->
       <div class="footer-content">
         <div class="footer-icons">
           <div class="footer-icon-placeholder">
@@ -91,12 +103,27 @@
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router';
+import { onMounted } from 'vue'
+import { RouterView, RouterLink, useRouter } from 'vue-router'
+import { authStore, logout, checkAuthStatus } from '@/stores/auth'
 
+const router = useRouter()
+
+// 로그아웃 처리 함수
+const handleLogout = () => {
+  logout() // 전역 상태 업데이트
+  alert('로그아웃 되었습니다.')
+  router.push('/')
+}
+
+// 컴포넌트 마운트 시 인증 상태 확인
+onMounted(() => {
+  checkAuthStatus()
+})
 </script>
 
 <style scoped>
-/* ======== 전역 및 레이아웃 스타일 ======== */
+/* 기존 스타일 유지 + 추가 스타일 */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
 body {
@@ -145,19 +172,6 @@ a {
 }
 
 /* ======== 네비게이션 메뉴 스타일 ======== */
-.navigation-menu a {
-  font-size: 16px;
-  font-weight: 500;
-  color: #FFFFFF;
-  opacity: 0.9;
-  transition: opacity 0.2s ease;
-}
-
-.navigation-menu a.router-link-exact-active {
-  font-weight: 700;
-  opacity: 1;
-}
-
 .navigation-menu ul {
   display: flex;
   gap: 40px;
@@ -166,7 +180,23 @@ a {
   padding: 0;
 }
 
-/* ======== 우측 섹션 스타일 (핵심 수정 부분) ======== */
+.navigation-menu ul li {
+  font-size: 16px;
+  font-weight: 500;
+  color: #FFFFFF;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+
+
+.navigation-menu a.router-link-exact-active {
+  font-weight: 700;
+  opacity: 1;
+}
+
+/* ======== 우측 섹션 스타일 ======== */
 .right-section {
   display: flex;
   flex-direction: column;
@@ -174,7 +204,6 @@ a {
   gap: 8px;
 }
 
-/* 상단 링크들 스타일 */
 .top-bar {
   display: flex;
   justify-content: flex-end;
@@ -193,7 +222,7 @@ a {
   opacity: 0.8;
   padding: 4px 6px;
   border-radius: 3px;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
 .separator {
@@ -203,7 +232,14 @@ a {
   margin: 0 2px;
 }
 
-/* 하단 아이콘들 스타일 */
+/* 사용자 이름 스타일 추가 */
+.user-name {
+  font-size: 12px;
+  color: #FFFFFF;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
 .user-menu {
   display: flex;
   align-items: center;
@@ -217,9 +253,7 @@ a {
   transition: background-color 0.2s ease;
 }
 
-
-
-/* ======== FOOTER 스타일 ======== */
+/* ======== FOOTER 스타일 (기존과 동일) ======== */
 .app-footer {
   width: 100%;
   background-color: #22356F;
@@ -254,10 +288,15 @@ a {
   transition: opacity 0.2s ease;
 }
 
+.footer-icon-placeholder:hover img {
+  opacity: 1;
+}
+
 .footer-info p {
   font-size: 15px;
+  line-height: 1.6;
   opacity: 0.7;
-  margin: 5px;
+  margin: 5px 0;
 }
 
 .footer-info p:nth-of-type(2) {
@@ -266,7 +305,13 @@ a {
 
 .footer-info a {
   color: #FFFFFF;
-  transition: color 0.2s ease;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.footer-info a:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
 
 /* ======== 반응형 스타일 ======== */
@@ -297,9 +342,20 @@ a {
   .user-menu {
     gap: 12px;
   }
+
+  .footer-info p {
+    font-size: 12px;
+  }
+  .footer-info p:nth-of-type(2) {
+    font-size: 9px;
+  }
 }
 
 @media (max-width: 480px) {
+  .navigation-menu ul li {
+    font-size: 14px;
+  }
+
   .auth-links {
     gap: 6px;
   }
@@ -315,6 +371,14 @@ a {
   
   .user-menu {
     gap: 10px;
+  }
+
+  .footer-icons {
+    gap: 20px;
+  }
+  .footer-icon-placeholder img {
+    width: 24px;
+    height: auto;
   }
 }
 </style>

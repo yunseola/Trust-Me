@@ -1,8 +1,9 @@
 <template>
+  <!-- 기존 템플릿 내용 동일 -->
   <div class="login-container">
     <div class="login-form-wrapper">
       <form @submit.prevent="handleLogin" class="login-form">
-        <!-- 아이디 입력 -->
+        <!-- 기존 폼 내용 동일 -->
         <div class="form-group">
           <label for="userId" class="form-label">아이디</label>
           <input
@@ -15,7 +16,6 @@
           />
         </div>
 
-        <!-- 비밀번호 입력 -->
         <div class="form-group">
           <label for="password" class="form-label">비밀번호</label>
           <div class="password-input-wrapper">
@@ -38,7 +38,6 @@
           </div>
         </div>
 
-        <!-- 로그인 상태 유지 체크박스 -->
         <div class="form-check">
           <input
             type="checkbox"
@@ -51,12 +50,10 @@
           </label>
         </div>
 
-        <!-- 에러 메시지 표시 -->
         <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
         </div>
 
-        <!-- 로그인 버튼 -->
         <button 
           type="submit" 
           class="login-btn" 
@@ -65,13 +62,11 @@
           {{ isLoading ? '로그인 중...' : '로그인' }}
         </button>
 
-        <!-- 아이디/비밀번호 찾기 링크 -->
         <div class="find-links">
           <router-link to="/find-id" class="find-link">아이디 찾기</router-link>
           <router-link to="/find-password" class="find-link">비밀번호 찾기</router-link>
         </div>
 
-        <!-- 소셜 로그인 -->
         <div class="social-login">
           <p class="social-login-text">또는</p>
           <div class="social-buttons">
@@ -96,6 +91,7 @@
 
 <script>
 import axios from 'axios'
+import { login } from '@/stores/auth' // 전역 상태 관리 함수 import
 
 export default {
   name: 'LoginForm',
@@ -112,14 +108,11 @@ export default {
     }
   },
   methods: {
-    // 비밀번호 표시/숨김 토글
     togglePassword() {
       this.showPassword = !this.showPassword
     },
 
-    // 로그인 처리
     async handleLogin() {
-      // 입력값 검증
       if (!this.loginForm.userId.trim()) {
         this.errorMessage = '아이디를 입력해주세요.'
         return
@@ -134,51 +127,46 @@ export default {
       this.errorMessage = ''
 
       try {
-        // Django 백엔드로 로그인 요청
         const response = await axios.post('http://127.0.0.1:8000/accounts/login/', {
-          username: this.loginForm.userId,  // Django는 보통 username 필드 사용
+          username: this.loginForm.userId,
           password: this.loginForm.password,
           remember_me: this.loginForm.keepLogin
         }, {
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': this.getCSRFToken() // CSRF 토큰 추가
+            'X-CSRFToken': this.getCSRFToken()
           },
-          withCredentials: true // 쿠키 포함
+          withCredentials: true
         })
-        console.log('API 응답:', response);
-        // 로그인 성공 처리
-        // 로그인 성공 처리
-if (response.status === 200) {
-  // API 응답에서 'key' 값을 토큰으로 사용
-  if (response.data && response.data.key) { // response.data가 존재하고, 그 안에 key가 있는지 확인
-    localStorage.setItem('authToken', response.data.key); // 'authToken'이라는 키로 response.data.key 값을 저장
-    console.log('authToken 저장 완료:', localStorage.getItem('authToken'));
-  } else {
-    console.warn('API 응답에서 토큰(key) 정보를 찾을 수 없습니다.');
-    // 필요하다면 여기서 사용자에게 토큰 정보가 없음을 알리는 로직 추가
-  }
-  
-  // 현재 API 응답에는 사용자 정보(user)가 없어 보입니다.
-  // 만약 API가 사용자 정보도 반환한다면, 해당 키로 접근하여 저장해야 합니다.
-  // 예를 들어, response.data.userData 와 같은 형태라면 아래와 같이 수정합니다.
-  // if (response.data.userData) {
-  //   localStorage.setItem('user', JSON.stringify(response.data.userData));
-  // }
 
-  // 성공 메시지 표시 (선택사항)
-  this.$toast?.success('로그인에 성공했습니다!');
-  
-  // 메인 페이지로 리다이렉트
-  this.$router.push('/');
-}
+        console.log('API 응답:', response)
+
+        if (response.status === 200) {
+          if (response.data && response.data.key) {
+            // 전역 상태 업데이트 - 이 부분이 핵심!
+            login(response.data.key, response.data.user || { username: this.loginForm.userId })
+            
+            console.log('로그인 성공 - 전역 상태 업데이트 완료')
+            
+            // 성공 메시지
+            if (this.$toast) {
+              this.$toast.success('로그인에 성공했습니다!')
+            } else {
+              alert('환영합니다!')
+            }
+            
+            // 메인 페이지로 리다이렉트
+            this.$router.push('/')
+          } else {
+            console.warn('API 응답에서 토큰(key) 정보를 찾을 수 없습니다.')
+            this.errorMessage = '로그인 처리 중 오류가 발생했습니다.'
+          }
+        }
 
       } catch (error) {
         console.error('로그인 오류:', error)
         
-        // 에러 처리
         if (error.response) {
-          // 서버에서 응답한 에러
           switch (error.response.status) {
             case 400:
               this.errorMessage = '아이디 또는 비밀번호가 올바르지 않습니다.'
@@ -196,10 +184,8 @@ if (response.status === 200) {
               this.errorMessage = error.response.data?.message || '로그인 중 오류가 발생했습니다.'
           }
         } else if (error.request) {
-          // 네트워크 오류
           this.errorMessage = '네트워크 연결을 확인해주세요.'
         } else {
-          // 기타 오류
           this.errorMessage = '로그인 중 오류가 발생했습니다.'
         }
       } finally {
@@ -207,7 +193,6 @@ if (response.status === 200) {
       }
     },
 
-    // CSRF 토큰 가져오기
     getCSRFToken() {
       const cookies = document.cookie.split(';')
       for (let cookie of cookies) {
@@ -219,10 +204,8 @@ if (response.status === 200) {
       return ''
     },
 
-    // 소셜 로그인 처리
     async socialLogin(provider) {
       try {
-        // 소셜 로그인 URL로 리다이렉트
         window.location.href = `http://127.0.0.1:8000/accounts/social/${provider}/`
       } catch (error) {
         console.error('소셜 로그인 오류:', error)
@@ -231,7 +214,6 @@ if (response.status === 200) {
     }
   },
 
-  // 컴포넌트 마운트 시 실행
   mounted() {
     // 이미 로그인된 사용자라면 메인 페이지로 리다이렉트
     const token = localStorage.getItem('authToken')
@@ -243,13 +225,13 @@ if (response.status === 200) {
 </script>
 
 <style scoped>
+/* 기존 스타일 동일 */
 .login-container {
   font-family: 'Noto Sans KR', sans-serif;
   min-height: calc(50vh - 100px);
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
+  justify-content: center; 
 }
 
 .login-form-wrapper {
