@@ -6,6 +6,9 @@ import ExchangeView from '../views/ExchangeView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import MyPageView from '@/views/MyPageView.vue'
 import UserDetailView from '@/views/UserDetailView.vue'
+import introduceView from '@/views/introduceView.vue'
+import IntroduceDetailView from '@/views/IntroduceDetailView.vue'
+import IntroduceCompareView from '@/views/IntroduceCompareView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,15 +37,34 @@ const router = createRouter({
       component: SignUpView,
       meta: { title: '밑고름: 회원가입' }
     },
+        {
+      path: '/introducecompare',
+      name: 'introducecompare',
+      component: IntroduceCompareView,
+      meta: { title: '밑고름: 금융상품비교' }
+    },
     {
       path: '/metal-price',
       name: 'metal-price',
-      component: MetalPriceView
+      component: MetalPriceView,
+      meta: { title: '밑고름: 금은시세' }
     },
+     {
+      path: '/introduce',
+      name: 'introduce',
+      component: introduceView,
+      meta: { title: '밑고름: 금융상품소개' }
+    },
+    { path: '/introduce/:type/:fin_prdt_cd',
+      name: 'IntroduceDetail',
+      component: IntroduceDetailView,
+      props: true,
+    meta: { title: '밑고름: 금융상품상세' } },
     {
     path: '/exchange',   
     name: 'exchange',
-    component: ExchangeView   
+    component: ExchangeView,   
+    meta: { title: '밑고름: 환율' }
   },
       {
       path: '/userdetail',

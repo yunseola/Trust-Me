@@ -10,11 +10,11 @@
         <!-- 네비게이션 메뉴 -->
         <nav class="navigation-menu">
           <ul>
-            <li>금융상품 소개</li>
+            <li><RouterLink to="/introduce">금융상품 소개</RouterLink></li>
             <li>맞춤형 상품 추천</li>
-            <li>금융상품 비교</li>
-            <li>환율</li>
-            <li>금은시세</li>
+            <li><RouterLink to="/introducecompare">금융상품 비교</RouterLink></li>
+            <li><RouterLink to="/exchange">환율</RouterLink></li>
+            <li><RouterLink to="/metal-price">금은시세</RouterLink></li>
           </ul>
         </nav>
         

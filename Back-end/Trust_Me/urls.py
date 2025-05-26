@@ -16,10 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from deposits import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('deposits/', include('deposits.urls')),
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('allauth.urls')),
+
+
+
+    path('products/<str:product_type>/<str:fin_prdt_cd>/', views.product_detail, name='product-detail'),
+    path('deposits/save/', views.deposit_list, name='deposit-list'),
+    path('deposits/save2/', views.saving_list, name='saving-list'),
+    path('deposits/depositoptions/', views.deposit_options_list, name='deposit-options'),
+    path('deposits/savingoptions/', views.saving_options_list, name='saving-options'),
 ]

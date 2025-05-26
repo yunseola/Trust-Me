@@ -5,6 +5,7 @@ from .serializers import DepositProductsSerializerD, DepositProductsSerializerC,
 from rest_framework.decorators import api_view
 from rest_framework import status
 import requests
+from django.shortcuts import get_object_or_404
 from deposits.models import DepositProducts
 from .services.summary import summarize_deposit_product
 from .services.youtube import search_youtube_videos
@@ -216,3 +217,84 @@ def supported_currencies_view(request):
         return Response(data)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+
+
+
+
+
+
+
+
+@api_view(['GET'])
+def product_detail(request, product_type, fin_prdt_cd):
+    """
+    상품 상세 정보와 해당 옵션들을 함께 반환하는 API
+    """
+    try:
+        if product_type == 'deposit':
+            # 예금 상품 정보 가져오기
+            product = get_object_or_404(DepositProducts, fin_prdt_cd=fin_prdt_cd)
+            product_serializer = DepositProductsSerializer(product)
+            
+            # 해당 예금의 옵션들 가져오기
+            options = DepositOptions.objects.filter(fin_prdt_cd=product)
+            options_serializer = DepositOptionsSerializer(options, many=True)
+            
+        elif product_type == 'saving':
+            # 적금 상품 정보 가져오기
+            product = get_object_or_404(SavingProducts, fin_prdt_cd=fin_prdt_cd)
+            product_serializer = SavingProductsSerializer(product)
+            
+            # 해당 적금의 옵션들 가져오기
+            options = SavingOptions.objects.filter(fin_prdt_cd=product)
+            options_serializer = SavingOptionsSerializer(options, many=True)
+            
+        else:
+            return Response(
+                {'error': 'Invalid product type. Use "deposit" or "saving"'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # 상품 정보와 옵션 정보를 함께 반환
+        response_data = {
+            'product': product_serializer.data,
+            'options': options_serializer.data,
+            'product_type': product_type
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def deposit_list(request):
+    """예금 상품 목록 반환"""
+    deposits = DepositProducts.objects.all()
+    serializer = DepositProductsSerializer(deposits, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def saving_list(request):
+    """적금 상품 목록 반환"""
+    savings = SavingProducts.objects.all()
+    serializer = SavingProductsSerializer(savings, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def deposit_options_list(request):
+    """예금 옵션 목록 반환"""
+    options = DepositOptions.objects.all()
+    serializer = DepositOptionsSerializer(options, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def saving_options_list(request):
+    """적금 옵션 목록 반환"""
+    options = SavingOptions.objects.all()
+    serializer = SavingOptionsSerializer(options, many=True)
+    return Response(serializer.data)
