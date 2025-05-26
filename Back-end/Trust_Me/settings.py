@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'allauth.account',
 
     'django.contrib.sites',
-    # 'allauth.socialaccount',
     'corsheaders',
 
     'allauth.socialaccount',
@@ -161,7 +160,8 @@ REST_AUTH = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
     'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailsSerializer',
  }
-
+# 이메일 인증 설정
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 CORS_ALLOWED_ORIGINS = [
@@ -192,3 +192,12 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],}
