@@ -1,88 +1,111 @@
 <template>
-     <!-- 환율 요약 -->
-  <div class="exchange-wrapper">
-    <div class="converter-box">
-      <!-- 왼쪽 국가 선택 -->
-      <div class="currency-box">
-        <div class="country-wrapper">
-          <div class="country-select-box">
-            <img :src="getFlagUrl(selectedLeft.code)" alt="flag" />
-            <span>{{ countryNameMap[selectedLeft.code] }}</span>
-            <span class="code">{{ selectedLeft.code }}</span>
-            <span class="arrow-button" @click.stop="toggleDropdown('left')">v</span>
+  <div v-if="loading" class="loader-container">
+    <div class="spinner"></div>
+    <p class="loading-text">환율 정보를 불러오는 중...</p>
+  </div>
+  <div v-else>
+    <!-- 환율 요약 -->
+    <div class="exchange-wrapper">
+      <div class="converter-box">
+        <!-- 왼쪽 국가 선택 -->
+        <div class="currency-box">
+          <div class="country-wrapper">
+            <div class="country-select-box">
+              <img :src="getFlagUrl(selectedLeft.code)" alt="flag" />
+              <span>{{ countryNameMap[selectedLeft.code] }}</span>
+              <span class="code">{{ selectedLeft.code }}</span>
+              <span class="arrow-button" @click.stop="toggleDropdown('left')">v</span>
+            </div>
+            <ul v-if="isDropdownLeft" class="dropdown-list">
+              <li
+                v-for="(name, code) in supported"
+                :key="code"
+                @click="selectCountry('left', code)"
+              >
+                {{ countryNameMap[code] || code }}
+              </li>
+            </ul>
           </div>
-          <ul v-if="isDropdownLeft" class="dropdown-list">
-            <li
-              v-for="(name, code) in supported"
-              :key="code"
-              @click="selectCountry('left', code)"
-            >
-              {{ countryNameMap[code] || code }}
-            </li>
-          </ul>
-        </div>
-        <div class="amount-box">
-          <div class="amount">1</div>
-          <div class="unit">1 {{ selectedLeft.code }}</div>
-        </div>
-      </div>
-
-      <!-- 등호 -->
-      <div class="equals">=</div>
-
-      <!-- 오른쪽 국가 선택 -->
-      <div class="currency-box">
-        <div class="country-wrapper">
-          <div class="country-select-box">
-            <img :src="getFlagUrl(selectedRight.code)" alt="flag" />
-            <span>{{ countryNameMap[selectedRight.code] }}</span>
-            <span class="code">{{ selectedRight.code }}</span>
-            <span class="arrow-button" @click.stop="toggleDropdown('right')">v</span>
+          <div class="amount-box">
+            <div class="amount">1</div>
+            <div class="unit">1 {{ selectedLeft.code }}</div>
           </div>
-          <ul v-if="isDropdownRight" class="dropdown-list">
-            <li
-              v-for="(name, code) in supported"
-              :key="code"
-              @click="selectCountry('right', code)"
-            >
-              {{ countryNameMap[code] || code }}
-            </li>
-          </ul>
         </div>
-        <div class="amount-box">
-          <div class="amount">{{ convertedRate }}</div>
-          <div class="unit">{{ convertedRate }} {{ selectedRight.code }}</div>
+
+        <!-- 등호 -->
+        <div class="equals">=</div>
+
+        <!-- 오른쪽 국가 선택 -->
+        <div class="currency-box">
+          <div class="country-wrapper">
+            <div class="country-select-box">
+              <img :src="getFlagUrl(selectedRight.code)" alt="flag" />
+              <span>{{ countryNameMap[selectedRight.code] }}</span>
+              <span class="code">{{ selectedRight.code }}</span>
+              <span class="arrow-button" @click.stop="toggleDropdown('right')">v</span>
+            </div>
+            <ul v-if="isDropdownRight" class="dropdown-list">
+              <li
+                v-for="(name, code) in supported"
+                :key="code"
+                @click="selectCountry('right', code)"
+              >
+                {{ countryNameMap[code] || code }}
+              </li>
+            </ul>
+          </div>
+          <div class="amount-box">
+            <div class="amount">{{ convertedRate }}</div>
+            <div class="unit">{{ convertedRate }} {{ selectedRight.code }}</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-    <!-- 주요 차트 -->
-  <!-- 주요 차트 (슬라이더 적용) -->
-<MiniChartSlider />
+    <!-- 주요 차트 (슬라이더 적용) -->
+    <MiniChartSlider />
 
     <!-- 환율 테이블 -->
-    <table class="rate-table">
-      <thead>
-        <tr>
-          <th>국가명</th>
-          <th>통화</th>
-          <th>매매기준율</th>
-          <th>전일비</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in exchangeData" :key="item.code">
-          <td>{{ item.country }}</td>
-          <td>{{ item.currency }}</td>
-          <td>{{ item.rate }}</td>
-          <td :class="item.change < 0 ? 'down' : 'up'">
-            {{ item.change < 0 ? '▼' : '▲' }}{{ Math.abs(item.change) }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="rate-table-wrapper">
+      <table class="rate-table">
+        <thead>
+          <tr>
+            <th>국가명</th>
+            <th>통화</th>
+            <th>매매기준율</th>
+            <th>전일비</th>
+            <th>사실 때</th>
+            <th>파실 때</th>
+            <th>송금 보낼 때</th>
+            <th>송금 받을 때</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, idx) in enrichedRates"
+            :key="row.code"
+            :class="{ 'row-divider': (idx + 1) % 5 === 0 }"
+          >
+            <td class="flag-name-cell">
+              <img :src="getFlagUrl(row.code)" alt="flag" class="flag-icon" />
+              {{ row.country }}
+            </td>
+            <td>{{ row.currency }}</td>
+            <td>{{ formatNumber(row.baseRate) }}</td>
+            <td :class="row.change < 0 ? 'down' : 'up'">
+              {{ row.change < 0 ? '▼' : '▲' }}{{ Math.abs(row.change).toFixed(2) }}
+            </td>
+            <td>{{ formatNumber(row.buy) }}</td>
+            <td>{{ formatNumber(row.sell) }}</td>
+            <td>{{ formatNumber(row.send) }}</td>
+            <td>{{ formatNumber(row.receive) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -154,84 +177,86 @@ const fetchConversion = async () => {
   }
 }
 
+const enrichedRates = ref([])
+
+const formatNumber = (num) => {
+  return Number(num).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+}
+
+const fetchPrevRates = async () => {
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  const date = yesterday.toISOString().split('T')[0]
+  const { data } = await axios.get(`https://api.frankfurter.app/${date}?from=USD`)
+  return data.rates
+}
+
+const buildExchangeTable = async () => {
+  const prev = await fetchPrevRates()
+  const today = rates.value
+
+  enrichedRates.value = Object.keys(today).map(code => {
+    const todayRate = today[code]
+    const yesterdayRate = prev[code] ?? todayRate
+    const change = (todayRate - yesterdayRate) * 100
+
+    return {
+      code,
+      country: countryNameMap[code] || code,
+      currency: supported.value[code] || '',
+      baseRate: todayRate * 100,
+      change: change,
+      buy: todayRate * 101,
+      sell: todayRate * 99,
+      send: todayRate * 102,
+      receive: todayRate * 98
+    }
+  })
+
+  console.log('📌 prevRates', prev)
+  console.log('📌 todayRates', today)
+  console.log('📌 enriched', enrichedRates.value)
+}
+
+const loading = ref(true)
+
+onMounted(async () => {
+  loading.value = true
+  await fetchSupported()
+  await fetchRates()
+  await fetchChartRates()
+  await buildExchangeTable()
+  loading.value = false
+})
+
+
 const countryNameMap = {
-  AED: '아랍에미리트',
-  AUD: '호주',
-  BRL: '브라질',
-  CAD: '캐나다',
-  CHF: '스위스',
-  CNY: '중국',
-  CZK: '체코',
-  DKK: '덴마크',
-  EUR: '유럽연합',
-  GBP: '영국',
-  HKD: '홍콩',
-  IDR: '인도네시아',
-  INR: '인도',
-  JPY: '일본',
-  KRW: '대한민국',
-  MXN: '멕시코',
-  MYR: '말레이시아',
-  NOK: '노르웨이',
-  NZD: '뉴질랜드',
-  PLN: '폴란드',
-  RUB: '러시아',
-  SAR: '사우디아라비아',
-  SEK: '스웨덴',
-  SGD: '싱가포르',
-  THB: '태국',
-  TRY: '튀르키예',
-  TWD: '대만',
-  USD: '미국',
-  VND: '베트남',
-  ZAR: '남아프리카공화국'
+  AED: '아랍에미리트', AUD: '호주', BRL: '브라질', CAD: '캐나다', CHF: '스위스',
+  CNY: '중국', CZK: '체코', DKK: '덴마크', EUR: '유럽연합', GBP: '영국',
+  HKD: '홍콩', IDR: '인도네시아', INR: '인도', JPY: '일본', KRW: '대한민국',
+  MXN: '멕시코', MYR: '말레이시아', NOK: '노르웨이', NZD: '뉴질랜드', PLN: '폴란드',
+  RUB: '러시아', SAR: '사우디아라비아', SEK: '스웨덴', SGD: '싱가포르', THB: '태국',
+  TRY: '튀르키예', TWD: '대만', USD: '미국', VND: '베트남', ZAR: '남아프리카공화국'
 }
 
 const currencyToCountryCode = {
-  USD: 'us',
-  KRW: 'kr',
-  CNY: 'cn',
-  JPY: 'jp',
-  EUR: 'eu',
-  GBP: 'gb',
-  RUB: 'ru',
-  VND: 'vn',
-  AUD: 'au',
-  CAD: 'ca',
-  CHF: 'ch',
-  SGD: 'sg',
-  HKD: 'hk',
-  IDR: 'id',
-  MYR: 'my',
-  THB: 'th',
-  TRY: 'tr',
-  TWD: 'tw',
-  ZAR: 'za',
-  SAR: 'sa',
-  NZD: 'nz',
-  NOK: 'no',
-  DKK: 'dk',
-  SEK: 'se',
-  INR: 'in',
-  PLN: 'pl',
-  MXN: 'mx',
-  AED: 'ae',
-  CZK: 'cz'
+  USD: 'us', KRW: 'kr', CNY: 'cn', JPY: 'jp', EUR: 'eu', GBP: 'gb', RUB: 'ru',
+  VND: 'vn', AUD: 'au', CAD: 'ca', CHF: 'ch', SGD: 'sg', HKD: 'hk', IDR: 'id',
+  MYR: 'my', THB: 'th', TRY: 'tr', TWD: 'tw', ZAR: 'za', SAR: 'sa', NZD: 'nz',
+  NOK: 'no', DKK: 'dk', SEK: 'se', INR: 'in', PLN: 'pl', MXN: 'mx', AED: 'ae', CZK: 'cz', BRL: 'br'
 }
-
-onMounted(() => {
-  fetchSupported()
-  fetchRates()
-  fetchChartRates()
-})
-
-const exchangeData = ref([
-  { country: '미국', currency: '달러', rate: 1375.2, change: -1.8, code: 'USD' },
-  { country: '일본', currency: '엔', rate: 958.36, change: -2.67, code: 'JPY' },
-  { country: '중국', currency: '위안', rate: 190.97, change: -0.25, code: 'CNY' },
-  { country: '영국', currency: '파운드', rate: 1684.93, change: -0.49, code: 'GBP' },
-])
 </script>
+
+
+<style>
+body {
+  background-color: #edf0f2;
+}
+</style>
+
 
 <style scoped>
 .exchange-wrapper {
@@ -405,5 +430,86 @@ line-height: 1.2; /* ✅ 텍스트만 위로 살짝 이동 */
   flex-wrap: wrap;
   margin-top: 30px;
 }
+
+.rate-table-wrapper {
+  margin: 40px auto;
+  max-width: 1100px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.rate-table thead {
+  background-color: #f4f4f4;
+}
+.rate-table th,
+.rate-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+.up {
+  color: red;
+  font-weight: bold;
+}
+.down {
+  color: blue;
+  font-weight: bold;
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 0;
+}
+
+
+.spinner {
+  border: 6px solid #eee;
+  border-top: 6px solid #3b82f6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 16px;
+  font-size: 1rem;
+  color: #666;
+}
+
+.flag-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flag-icon {
+  width: 20px;
+  height: 14px;
+  object-fit: contain;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* 5개마다 굵은 선 */
+.row-divider {
+  border-bottom: 2px solid #bbb !important;
+}
+
+
 </style>
  

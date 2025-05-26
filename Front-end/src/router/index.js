@@ -9,6 +9,7 @@ import UserDetailView from '@/views/UserDetailView.vue'
 import introduceView from '@/views/introduceView.vue'
 import IntroduceDetailView from '@/views/IntroduceDetailView.vue'
 import IntroduceCompareView from '@/views/IntroduceCompareView.vue'
+import RecommendationView from '@/views/RecommendationView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,7 +65,7 @@ const router = createRouter({
     path: '/exchange',   
     name: 'exchange',
     component: ExchangeView,   
-    meta: { title: '밑고름: 환율' }
+    meta: { title: '밑고름: 환율정보' }
   },
       {
       path: '/userdetail',
@@ -72,6 +73,12 @@ const router = createRouter({
       component: UserDetailView,
       meta: { title: '밑고름: 회원정보수정' }
     },
+    {
+    path: '/recommendation',   
+    name: 'recommendation',
+    component: RecommendationView,
+    meta: { title: '밑고름: 상품추천' }   
+  },
   ],
 })
 router.afterEach((to, from) => {

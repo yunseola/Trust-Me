@@ -5,7 +5,7 @@ from .views import summarize_product, gpt_recommendation, youtube_videos, get_go
 urlpatterns = [
     path('save/', views.save_deposit, name='deposit'),
     path('save2/', views.save_saving, name='saving'),
-    path('summarize/<int:product_id>/', summarize_product),
+    path('summarize/<str:product_fin_prdt_cd>/', summarize_product),
     path('recommend/', gpt_recommendation),
     path('youtube/', youtube_videos),
     path("metal/", get_gold_and_silver_prices),

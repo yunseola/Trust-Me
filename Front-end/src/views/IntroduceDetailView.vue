@@ -400,13 +400,11 @@ onMounted(async () => {
 }
 
 .product-detail {
-  background: white;
   border-radius: 0;
   overflow: hidden;
 }
 
 .product-header {
-  background: white;
   padding: 20px 30px;
 }
 
@@ -455,7 +453,7 @@ onMounted(async () => {
 }
 
 .main-info-card {
-  margin-top: 20px;
+  margin-bottom: 50px;
   background: #f8f4e6;
   padding: 25px 30px;
 }
@@ -598,7 +596,7 @@ onMounted(async () => {
 
 .product-description-section {
   background: white;
-  margin-top: 50px;
+
 }
 
 .section-header {

@@ -34,10 +34,10 @@ export const fetchChartRates = async () => {
           params: { from: base, to: cur.code }
         })
         const rate = data?.rates?.[cur.code]
-        results.push(rate ?? 0)
+        results.push(rate ? 1 / rate : 0)
       } catch (err) {
         console.warn(`❌ ${cur.code} ${date} error`, err)
-        results.push(0)
+        results.push()
       }
     }
     rateSeries.value[cur.code] = results

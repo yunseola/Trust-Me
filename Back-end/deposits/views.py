@@ -119,11 +119,20 @@ def save_saving(request): # models에 저장하는 함수
 
 
 @api_view(['GET'])
-def summarize_product(request, product_id):
+def summarize_product(request, product_fin_prdt_cd):
+    product = None
+    # 1. DepositProducts에서 먼저 찾기
     try:
-        product = DepositProducts.objects.get(pk=product_id)
+        product = DepositProducts.objects.get(fin_prdt_cd=product_fin_prdt_cd)
     except DepositProducts.DoesNotExist:
-        return Response({"error": "상품을 찾을 수 없습니다."}, status=404)
+        pass
+
+    # 2. 없으면 SavingProducts에서 찾기
+    if not product:
+        try:
+            product = SavingProducts.objects.get(fin_prdt_cd=product_fin_prdt_cd)
+        except SavingProducts.DoesNotExist:
+            return Response({"error": "상품을 찾을 수 없습니다."}, status=404)
 
     summary = summarize_deposit_product(
         name=product.fin_prdt_nm,
@@ -135,7 +144,7 @@ def summarize_product(request, product_id):
     )
 
     return Response({
-        "product_id": product_id,
+        "product_fin_prdt_cd": product_fin_prdt_cd,
         "summary": summary
     })
 

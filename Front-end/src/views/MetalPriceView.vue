@@ -76,7 +76,7 @@
     <!-- 하단 버튼 -->
     <div class="button-wrapper">
     <button class="go-home-btn" @click="goHome">
-      목록으로
+      홈으로
     </button>
   </div>
 </div>
@@ -206,6 +206,12 @@ onMounted(() => {
 
 
 </script>
+
+<style>
+body {
+  background-color: #edf0f2;
+}
+</style>
 
 <style scoped>
 .header-wrapper {

@@ -174,6 +174,12 @@ onBeforeUnmount(() => {
 
 </script>
 
+<style>
+body {
+  background-color: #edf0f2;
+}
+</style>
+
 <style scoped>
 .banner-slideshow {
   width: 100%;

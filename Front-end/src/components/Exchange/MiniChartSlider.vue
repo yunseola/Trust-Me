@@ -1,128 +1,77 @@
+<script setup>
+import { ref, computed } from 'vue'
+import MiniChartBox from './MiniChartBox.vue'
+import { currencies, rateSeries } from '@/api/chartRates'
+
+const currentPage = ref(0)
+const itemsPerPage = 2
+
+const totalPages = computed(() => Math.ceil(currencies.length / itemsPerPage))
+
+const visibleCharts = computed(() => {
+  const start = currentPage.value * itemsPerPage
+  return currencies.slice(start, start + itemsPerPage)
+})
+
+// ✅ 무한 슬라이딩 로직
+const nextPage = () => {
+  currentPage.value = (currentPage.value + 1) % totalPages.value
+}
+
+const prevPage = () => {
+  currentPage.value = (currentPage.value - 1 + totalPages.value) % totalPages.value
+}
+</script>
+
 <template>
-  <div class="mini-chart-box">
-    <div class="header">
-      <img :src="flagUrl" class="flag" />
-      <div class="info">
-        <strong>{{ countryName }}</strong>
-        <span>{{ currency }}</span>
-      </div>
+  <div class="slider-wrapper">
+    <!-- 🔁 버튼에서 disabled 제거 -->
+    <button @click="prevPage" class="arrow">◀</button>
+
+    <div class="chart-container">
+      <MiniChartBox
+        v-for="cur in visibleCharts"
+        :key="cur.code"
+        :currency="cur.code"
+        :countryName="cur.name"
+        :flagUrl="`https://flagcdn.com/w40/${cur.flag}.png`"
+        :data="rateSeries[cur.code]"
+      />
     </div>
-    <div class="rate">
-      {{ latestRate }}
-    </div>
-    <canvas ref="canvasEl"></canvas>
+
+    <button @click="nextPage" class="arrow">▶</button>
   </div>
 </template>
 
-<script setup>
-import { ref, watch } from 'vue'
-import {
-  Chart, LineController, LineElement, LinearScale,
-  PointElement, CategoryScale, Filler
-} from 'chart.js'
-import { dateLabels } from '@/api/chartRates'
-
-Chart.register(LineController, LineElement, LinearScale, PointElement, CategoryScale, Filler)
-
-const props = defineProps({
-  currency: String,
-  countryName: String,
-  flagUrl: String,
-  data: Array
-})
-
-const canvasEl = ref(null)
-const chartInstance = ref(null)
-const latestRate = ref(0)
-
-const renderChart = () => {
-  if (!canvasEl.value || !props.data || props.data.length === 0) return
-
-  latestRate.value = props.data.at(-1)
-
-  if (chartInstance.value) {
-    chartInstance.value.destroy()
-  }
-
-  chartInstance.value = new Chart(canvasEl.value, {
-    type: 'line',
-    data: {
-      labels: dateLabels,
-      datasets: [
-        {
-          data: props.data,
-          borderColor: '#2196F3',
-          backgroundColor: 'rgba(33, 150, 243, 0.1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.3,
-          pointRadius: 2
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          display: true,
-          title: {
-            display: true,
-            text: '날짜',
-            font: { size: 12 }
-          },
-          ticks: {
-            font: { size: 10 }
-          }
-        },
-        y: {
-          display: true,
-          title: {
-            display: true,
-            text: '환율 (KRW 기준)',
-            font: { size: 12 }
-          },
-          ticks: {
-            font: { size: 10 }
-          }
-        }
-      },
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  })
-}
-
-watch(() => props.data, (val) => {
-  if (val && val.length > 0) renderChart()
-}, { immediate: true })
-</script>
-
 <style scoped>
-.mini-chart-box {
-  width: 360px;
-  height: 240px;
-  padding: 16px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.header {
+.slider-wrapper {
   display: flex;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 8px;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.flag {
-  width: 24px;
-  margin-right: 8px;
+.chart-container {
+  display: flex;
+  gap: 40px;
+  flex-direction: row;
 }
 
-.rate {
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-bottom: 6px;
+.arrow {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.arrow:hover {
+  background: #f0f0f0;
 }
 </style>
