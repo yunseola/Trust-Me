@@ -152,18 +152,99 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .services.recommend import recommend_products
 
+from dataclasses import dataclass
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import DepositOptions, SavingOptions
+
+
+@dataclass
+class UserProfile:
+    age: str
+    asset: str
+    goal: str
+    type: str  # 예금 or 적금
+
+
+def filter_options(profile, options):
+    filtered = options
+
+    if profile.age in ['10대', '20대']:
+        filtered = [opt for opt in filtered if opt['save_trm'] <= 12]
+    elif profile.age in ['30대', '40대']:
+        filtered = [opt for opt in filtered if 12 <= opt['save_trm'] <= 24]
+    elif profile.age in ['50대', '60대 이상']:
+        filtered = [opt for opt in filtered if opt['save_trm'] >= 24]
+
+    if profile.goal == '생활비':
+        filtered = [opt for opt in filtered if opt['save_trm'] <= 12]
+    elif profile.goal == '주택':
+        filtered = [opt for opt in filtered if opt['save_trm'] >= 24]
+    elif profile.goal == '노후 준비':
+        filtered = [opt for opt in filtered if opt['intr_rate2'] >= 3.0]
+
+    if profile.asset in ['~300만', '~500만']:
+        filtered = [opt for opt in filtered if opt['intr_rate2'] >= 2.0]
+    elif profile.asset == '1억 이상':
+        filtered = [opt for opt in filtered if opt['intr_rate2'] >= 3.5]
+
+    return filtered
+
+
+def get_top_recommendations(filtered_options, limit=3):
+    seen = set()
+    result = []
+    for opt in sorted(filtered_options, key=lambda x: x['intr_rate2'], reverse=True):
+        if opt['fin_prdt_nm'] not in seen:
+            result.append(opt)
+            seen.add(opt['fin_prdt_nm'])
+        if len(result) == limit:
+            break
+    return result
+
+
 @api_view(['POST'])
 def gpt_recommendation(request):
-    profile = {
-        'age': request.data.get('age', ''),
-        'asset': request.data.get('asset', ''),
-        'goal': request.data.get('goal', ''),
-        'type': request.data.get('type', '')
-    }
+    profile = UserProfile(
+        age=request.data.get('age', ''),
+        asset=request.data.get('asset', ''),
+        goal=request.data.get('goal', ''),
+        type=request.data.get('type', '')
+    )
 
-    result = recommend_products(profile)
-    return Response({"recommendation": result})
+    raw_data = []
 
+    if profile.type == '예금':
+        options = DepositOptions.objects.select_related('fin_prdt_cd').all()
+        for opt in options:
+            raw_data.append({
+                "fin_prdt_cd": opt.fin_prdt_cd.fin_prdt_cd,  # ✅ 추가
+                "fin_prdt_nm": opt.fin_prdt_cd.fin_prdt_nm,
+                "kor_co_nm": opt.fin_prdt_cd.kor_co_nm,
+                "save_trm": opt.save_trm,
+                "intr_rate2": opt.intr_rate2,
+                "etc_note": opt.fin_prdt_cd.etc_note,
+                "spcl_cnd": opt.fin_prdt_cd.spcl_cnd,
+                "join_way": opt.fin_prdt_cd.join_way
+            })
+    else:
+        options = SavingOptions.objects.select_related('fin_prdt_cd').all()
+        for opt in options:
+            raw_data.append({
+                "fin_prdt_cd": opt.fin_prdt_cd.fin_prdt_cd,  # ✅ 추가
+                "fin_prdt_nm": opt.fin_prdt_cd.fin_prdt_nm,
+                "kor_co_nm": opt.fin_prdt_cd.kor_co_nm,
+                "save_trm": opt.save_trm,
+                "intr_rate2": opt.intr_rate2,
+                "etc_note": opt.fin_prdt_cd.etc_note,
+                "spcl_cnd": opt.fin_prdt_cd.spcl_cnd,
+                "join_way": opt.fin_prdt_cd.join_way
+            })
+
+    filtered = filter_options(profile, raw_data)
+    recommendations = get_top_recommendations(filtered, limit=3)
+
+    return Response({"recommendation": recommendations})
 
 @api_view(['GET'])
 def youtube_videos(request):

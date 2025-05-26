@@ -11,7 +11,7 @@
         <nav class="navigation-menu">
           <ul>
             <li><RouterLink to="/introduce">금융상품 소개</RouterLink></li>
-            <li>맞춤형 상품 추천</li>
+            <li><RouterLink to="/recommendation">맞춤형 상품 추천</RouterLink></li>
             <li><RouterLink to="/introducecompare">금융상품 비교</RouterLink></li>
             <li><RouterLink to="/exchange">환율</RouterLink></li>
             <li><RouterLink to="/metal-price">금은시세</RouterLink></li>
@@ -23,18 +23,16 @@
           <!-- 상단 링크들 -->
           <div class="top-bar">
             <div class="auth-links">
+              <RouterLink to="/trustme">믿고름소개</RouterLink>
+                <span class="separator">|</span>
               <!-- 로그인 상태일 때 -->
               <template v-if="authStore.isLoggedIn">
-                <RouterLink to="/help">믿고름소개</RouterLink>
-                <span class="separator">|</span>
                 <RouterLink to="/mypage">마이페이지</RouterLink>
                 <span class="separator">|</span>
                 <a href="#" @click.prevent="handleLogout">로그아웃</a>
               </template>
               <!-- 로그아웃 상태일 때 -->
               <template v-else>
-                <RouterLink to="/login">밑고름소개</RouterLink>
-                <span class="separator">|</span>
                 <RouterLink to="/signup">회원가입</RouterLink>
                 <span class="separator">|</span>
                 <RouterLink to="/login">로그인</RouterLink>
