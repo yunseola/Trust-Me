@@ -17,7 +17,7 @@
       
       <form v-else-if="userInfo" @submit.prevent="updateUserInfo" class="edit-form">
         <div class="form-group">
-          <label for="username">아이디 (수정불가)</label>
+          <label for="username">아이디 (아이디는 변경이 불가능합니다)</label>
           <input 
             type="text" 
             id="username" 

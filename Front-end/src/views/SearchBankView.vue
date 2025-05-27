@@ -355,7 +355,6 @@ export default {
   margin: 0 auto;
   padding: 20px;
   font-family: 'Noto Sans KR', sans-serif;
-  background-color: #F8F9FA;
   min-height: 100vh;
 }
 

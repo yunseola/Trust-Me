@@ -241,7 +241,7 @@ export default {
           
           // 토큰이 반환되는 경우 저장
           if (data.token || data.key) {
-            localStorage.setItem('token', data.token || data.key);
+            localStorage.setItem('authToken', data.token || data.key);
           }
           
           // 로그인 페이지로 이동
