@@ -12,8 +12,8 @@ import IntroduceCompareView from '@/views/IntroduceCompareView.vue'
 import RecommendationView from '@/views/RecommendationView.vue'
 import TrustMeView from '@/views/TrustMeView.vue'
 import SearchBankView from '@/views/SearchBankView.vue'
-import MyPageDepositView from '@/views/MyPageDepositView.vue'
-import InterestYoutubeView from '@/views/InterestYoutubeView.vue'
+import MyPageDeposit from '@/components/MyPageDeposit.vue'
+import InterestYoutube from '@/components/InterestYoutube.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,11 +32,11 @@ const router = createRouter({
       children: [
       {
         path: '',
-        component: MyPageDepositView,
+        component: MyPageDeposit,
       },
       {
         path: '/InterestYoutubeView', // /dashboard/settings 경로
-        component: InterestYoutubeView
+        component: InterestYoutube
       }
     ]
     },
