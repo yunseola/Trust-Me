@@ -172,7 +172,7 @@ export default {
       this.error = null;
       
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         
         if (!token) {
           throw new Error('토큰이 없습니다. 로그인이 필요합니다.');
@@ -224,7 +224,7 @@ export default {
       this.updateLoading = true;
       
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         
         if (!token) {
           throw new Error('토큰이 없습니다. 로그인이 필요합니다.');

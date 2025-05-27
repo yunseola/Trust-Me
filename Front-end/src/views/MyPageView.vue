@@ -49,6 +49,23 @@
           </div>
         </div>
       </div>
+
+      <!-- 탭 버튼 섹션 -->
+      <div class="tab-buttons">
+        <button 
+          :class="['tab-btn', { active: activeTab === 'deposit' }]" 
+          @click="setActiveTab('deposit'), $router.push('/mypage')"
+        >
+          예금상품
+        </button>
+        <button 
+          :class="['tab-btn', { active: activeTab === 'security' }]" 
+          @click="setActiveTab('security'), $router.push('/InterestYoutubeView')"
+          
+        >
+          관심분야
+        </button>
+      </div>
     </div>
 
     <!-- 회원탈퇴 확인 모달 -->
@@ -65,9 +82,13 @@
         </div>
       </div>
     </div>
+    <RouterView/>
   </div>
-  <h1>추후 추가예정 (나의 금융상품 섹션)</h1>
+
 </template>
+
+
+
 
 <script>
 import axios from 'axios';
@@ -80,19 +101,33 @@ export default {
       userInfo: null,
       loading: false,
       error: null,
-      activeTab: 'deposit',
+      activeTab: 'deposit', // 기본값을 'deposit'으로 설정
       showDeleteModal: false,
       deleteLoading: false
     };
   },
   
   methods: {
+    // 탭 변경 메서드
+    setActiveTab(tab) {
+      this.activeTab = tab;
+      
+      // 탭에 따른 추가 로직 실행
+      if (tab === 'deposit') {
+        console.log('예금 상품 탭 선택됨');
+        // 예금 상품 관련 로직 실행
+      } else if (tab === 'security') {
+        console.log('금융 보안 탭 선택됨');
+        // 금융 보안 관련 로직 실행
+      }
+    },
+
     async fetchUserInfo() {
       this.loading = true;
       this.error = null;
       
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         
         if (!token) {
           throw new Error('토큰이 없습니다. 로그인이 필요합니다.');
@@ -143,7 +178,7 @@ export default {
       this.deleteLoading = true;
       
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         
         if (!token) {
           throw new Error('토큰이 없습니다. 로그인이 필요합니다.');
@@ -156,13 +191,8 @@ export default {
           }
         });
         
-        // auth store의 logout 함수 호출 (localStorage도 자동으로 정리됨)
         logout();
-        
-        // 성공 메시지 표시
         alert('회원탈퇴가 완료되었습니다.');
-        
-        // 로그인 페이지로 리다이렉트
         this.$router.push('/');
         
       } catch (error) {
@@ -208,7 +238,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .user-info-container {
   max-width: 1100px;
@@ -340,6 +369,49 @@ export default {
   gap: 10px;
 }
 
+/* 탭 버튼 스타일 */
+.tab-buttons {
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 16px 24px;
+  border: none;
+  background: #f8f9fa;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-right: 1px solid #e9ecef;
+  position: relative;
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.tab-btn.active {
+  background: #22356F;
+  color: white;
+  font-weight: 600;
+}
+
+.tab-btn.active:hover {
+  background: #0056b3;
+}
+
 /* 버튼 스타일 */
 .btn {
   padding: 5px 25px;
@@ -461,5 +533,19 @@ export default {
   .modal-buttons {
     flex-direction: column;
   }
+
+  .tab-buttons {
+    flex-direction: column;
+  }
+  
+  .tab-btn {
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .tab-btn:last-child {
+    border-bottom: none;
+  }
 }
 </style>
+
