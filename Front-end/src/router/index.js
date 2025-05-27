@@ -11,6 +11,7 @@ import IntroduceDetailView from '@/views/IntroduceDetailView.vue'
 import IntroduceCompareView from '@/views/IntroduceCompareView.vue'
 import RecommendationView from '@/views/RecommendationView.vue'
 import TrustMeView from '@/views/TrustMeView.vue'
+import SearchBankView from '@/views/SearchBankView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,6 +80,12 @@ const router = createRouter({
     name: 'recommendation',
     component: RecommendationView,
     meta: { title: '믿고름: 상품추천' }   
+  },
+  {
+    path: '/searchbank/:kor_co_nm',   
+    name: 'searchbank',
+    component: SearchBankView,
+    meta: { title: '밑고름: 은행찾기' }   
   },
   {
   path: '/trustme',

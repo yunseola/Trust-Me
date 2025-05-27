@@ -58,7 +58,7 @@
           <a href="#" class="tag">Email상담</a>
           <a href="#" class="tag">전화예약</a>
           <a href="#" class="tag">가입안내</a>
-          <a href="#" class="tag">은행찾기</a>
+          <RouterLink :to="`/searchbank/${product.kor_co_nm}`"  target="_blank" class="tag">은행찾기</RouterLink>
         </div>
 
         <!-- 이자 계산기 섹션 -->
@@ -101,8 +101,13 @@
         
         <div class="description-content">
           <div class="description-row">
-            <div class="description-label">상품특징(AI가 설명)</div>
-            <div class="description-value">삐비빅</div>
+            <div class="description-label">상품특징</div>
+            <div class="description-value">
+              <div v-if="summaryLoading" class="summary-loading">요약 정보를 불러오는 중...</div>
+              <div v-else-if="summaryError" class="summary-error">{{ summaryError }}</div>
+              <div v-else-if="productSummary" class="summary-content">{{ productSummary }}</div>
+              <div v-else>상품 특징 정보가 없습니다.</div>
+            </div>
           </div>
           
           <div class="description-row">
@@ -175,10 +180,40 @@ const selectedPeriod = ref(12)
 const depositAmount = ref('1,000,000')
 const selectedRate = ref('2.65')
 
+// 새로 추가: 상품 요약 관련 데이터
+const productSummary = ref('')
+const summaryLoading = ref(false)
+const summaryError = ref(null)
+
 // 계산된 속성들
 const availablePeriods = computed(() => {
   return options.value.length > 0 ? options.value : [{ save_trm: 12, intr_rate2: 2.65 }]
 })
+
+// 상품 요약 정보를 가져오는 함수
+const fetchProductSummary = async (fin_prdt_cd) => {
+  if (!fin_prdt_cd) return
+  
+  summaryLoading.value = true
+  summaryError.value = null
+  
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/deposits/summarize/${fin_prdt_cd}`)
+    
+    if (response.ok) {
+      const data = await response.json()
+      // 따옴표 제거하고 summary만 추출
+      productSummary.value = data.summary ? data.summary.replace(/"/g, '') : '상품 특징 정보가 없습니다.'
+    } else {
+      summaryError.value = '요약 정보를 불러올 수 없습니다.'
+    }
+  } catch (error) {
+    console.error('상품 요약 정보 가져오기 실패:', error)
+    summaryError.value = '요약 정보를 불러오는 중 오류가 발생했습니다.'
+  } finally {
+    summaryLoading.value = false
+  }
+}
 
 // 로컬스토리지 관련 메서드
 const getSavedProducts = () => {
@@ -226,10 +261,18 @@ const toggleSaveProduct = () => {
     }
     
     const productData = {
+      etc_note: product.value.etc_note || '',
       fin_prdt_cd: product.value.fin_prdt_cd,
       fin_prdt_nm: product.value.fin_prdt_nm,
+      join_deny: product.value.join_deny || '개인',
+      join_member: product.value.join_member || '개인',
+      join_way: product.value.join_way || '영업점, 비대면 채널',
       kor_co_nm: product.value.kor_co_nm,
-      productType: productType.value,
+      max_intr: product.max_intr || 2.65,
+      mtrt_int: product.value.mtrt_int || 2.65,
+      spcl_cnd: product.value.spcl_cnd || '',
+      type: productType.value,
+      user_count: product.value.user_count || 0,
       savedAt: new Date().toISOString()
     }
     
@@ -358,10 +401,15 @@ onMounted(async () => {
       await fetchDataSeparately(fin_prdt_cd, type)
       isProductSaved.value = checkIfProductSaved()
     }
+    
+    // 상품 정보 로드 후 요약 정보도 가져오기
+    await fetchProductSummary(fin_prdt_cd)
+    
   } catch (error) {
     console.error('통합 API 호출 실패:', error)
     await fetchDataSeparately(fin_prdt_cd, type)
     isProductSaved.value = checkIfProductSaved()
+    await fetchProductSummary(fin_prdt_cd)
   } finally {
     loading.value = false
   }
@@ -596,7 +644,6 @@ onMounted(async () => {
 
 .product-description-section {
   background: white;
-
 }
 
 .section-header {
@@ -646,6 +693,21 @@ onMounted(async () => {
 
 .description-value > div:last-child {
   margin-bottom: 0;
+}
+
+.summary-loading {
+  color: #666;
+  font-style: italic;
+}
+
+.summary-error {
+  color: #d32f2f;
+  font-size: 13px;
+}
+
+.summary-content {
+  line-height: 1.5;
+  color: #333;
 }
 
 .action-section {

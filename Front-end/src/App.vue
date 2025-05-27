@@ -85,7 +85,7 @@
         <div class="footer-info">
           <p>(주) 믿고름 사업자 번호: 992-13-01731&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;대표전화: 1599-8244&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;주소: 부산광역시 연제구 신호동 101-2</p>
           <p>
-            <a href="">회사소개</a> | 
+            <RouterLink to="/trustme">회사소개</RouterLink> | 
             <a href="https://www.jobkorea.co.kr/">인재채용</a> |
             <a href="https://www.navercorp.com/nhn/company/proposalGuide.nhn">제휴제안</a> |
             <a href="https://policy.naver.com/policy/service.html">이용약관</a> |
